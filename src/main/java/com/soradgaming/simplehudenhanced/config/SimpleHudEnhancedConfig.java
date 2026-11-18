@@ -109,12 +109,16 @@ public class SimpleHudEnhancedConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         @ConfigEntry.BoundedDiscrete(min = 50, max = 200)
         public int scale = 100;
+        // Position in GUI pixels, measured from the left/right and top/bottom edge of the screen.
+        // Defaults put it in the top right corner like vanilla. "Move Effects" edit mode changes these.
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
-        public int locationX = 100;
+        public int positionX = 2;
         @ConfigEntry.Gui.Tooltip
-        @ConfigEntry.BoundedDiscrete(min = 0, max = 100)
-        public int locationY = 0;
+        public boolean anchorRight = true;
+        @ConfigEntry.Gui.Tooltip
+        public int positionY = 2;
+        @ConfigEntry.Gui.Tooltip
+        public boolean anchorBottom = false;
     }
 
     public int getColor(StatusEffectInstance effect) {
