@@ -5,6 +5,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import com.soradgaming.simplehudenhanced.hud.HudElement;
 
 import java.util.function.ToIntBiFunction;
 
@@ -34,6 +35,12 @@ public class SimpleHudEnhancedConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     public MinimalEffects minimalEffects = new MinimalEffects();
+
+    // Pixel offsets set by the HUD editor, added on top of each element's slider position. Not shown in the menu.
+    // (Needs a category, otherwise Cloth adds an empty "default" tab for it.)
+    @ConfigEntry.Category("Status Elements")
+    @ConfigEntry.Gui.Excluded
+    public LayoutOffsets layoutOffsets = new LayoutOffsets();
 
     @ConfigEntry.Category("Movement Status")
     @ConfigEntry.Gui.Tooltip
@@ -92,6 +99,56 @@ public class SimpleHudEnhancedConfig implements ConfigData {
         @ConfigEntry.ColorPicker(allowAlpha = true)
         public int neutralForegroundColor = beneficialForegroundColor;
     }
+    public static class LayoutOffsets {
+        public int statusTextX = 0;
+        public int statusTextY = 0;
+        public int systemTimeX = 0;
+        public int systemTimeY = 0;
+        public int equipmentX = 0;
+        public int equipmentY = 0;
+        public int movementX = 0;
+        public int movementY = 0;
+        public int paperDollX = 0;
+        public int paperDollY = 0;
+
+        public int getX(HudElement element) {
+            return switch (element) {
+                case STATUS_TEXT -> statusTextX;
+                case SYSTEM_TIME -> systemTimeX;
+                case EQUIPMENT -> equipmentX;
+                case MOVEMENT -> movementX;
+                case PAPER_DOLL -> paperDollX;
+                case EFFECTS -> 0; // the effects display has its own pixel position
+            };
+        }
+
+        public int getY(HudElement element) {
+            return switch (element) {
+                case STATUS_TEXT -> statusTextY;
+                case SYSTEM_TIME -> systemTimeY;
+                case EQUIPMENT -> equipmentY;
+                case MOVEMENT -> movementY;
+                case PAPER_DOLL -> paperDollY;
+                case EFFECTS -> 0;
+            };
+        }
+
+        public void add(HudElement element, int dx, int dy) {
+            switch (element) {
+                case STATUS_TEXT -> { statusTextX += dx; statusTextY += dy; }
+                case SYSTEM_TIME -> { systemTimeX += dx; systemTimeY += dy; }
+                case EQUIPMENT -> { equipmentX += dx; equipmentY += dy; }
+                case MOVEMENT -> { movementX += dx; movementY += dy; }
+                case PAPER_DOLL -> { paperDollX += dx; paperDollY += dy; }
+                case EFFECTS -> { }
+            }
+        }
+
+        public void reset(HudElement element) {
+            add(element, -getX(element), -getY(element));
+        }
+    }
+
     // Minimal effects display: replaces the vanilla effect boxes with just the icon and a timer
     public static class MinimalEffects {
         @ConfigEntry.Gui.Tooltip

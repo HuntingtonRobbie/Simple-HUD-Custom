@@ -1,5 +1,7 @@
 package com.soradgaming.simplehudenhanced.hud;
 
+import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
+import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class ScreenManager {
@@ -7,10 +9,23 @@ public class ScreenManager {
     private final int screenHeight;
     private int padding;
 
+    // The HUD element this manager positions (null = not editable in the HUD editor) and the on-screen box
+    // (GUI pixels, before the editor's pixel offset) worked out by calculateXAxis/calculateYAxis
+    private final HudElement element;
+    private int boxX;
+    private int boxY;
+    private int boxWidth;
+    private int boxHeight;
+
     public ScreenManager(int screenWidth, int screenHeight) {
+        this(screenWidth, screenHeight, null);
+    }
+
+    public ScreenManager(int screenWidth, int screenHeight, HudElement element) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.padding = 0;
+        this.element = element;
     }
 
     public void setPadding(int padding) {
@@ -18,6 +33,20 @@ public class ScreenManager {
     }
 
     public int calculateXAxis(int configX, double scale, int lineWidth) {
+        int result = computeXAxis(configX, scale, lineWidth);
+        boxX = (int) Math.round(result * scale);
+        boxWidth = (int) Math.round(lineWidth * scale);
+        return result;
+    }
+
+    public int calculateYAxis(int lineHeight, int size, int configY, double scale) {
+        int result = computeYAxis(lineHeight, size, configY, scale);
+        boxY = (int) Math.round(result * scale);
+        boxHeight = (int) Math.round((lineHeight * size) * scale);
+        return result;
+    }
+
+    private int computeXAxis(int configX, double scale, int lineWidth) {
         int adjustedWidth = (int) Math.round(screenWidth - (padding) - (lineWidth * scale));
         int calculatedValue = (int) Math.round(adjustedWidth / scale * configX / 100);
 
@@ -32,7 +61,7 @@ public class ScreenManager {
         }
     }
 
-    public int calculateYAxis(int lineHeight, int size, int configY, double scale) {
+    private int computeYAxis(int lineHeight, int size, int configY, double scale) {
         int adjustedHeight = (int) Math.round(screenHeight - padding - (lineHeight * size) * scale);
         int calculatedValue = (int) Math.round(adjustedHeight / scale * configY / 100);
 
@@ -47,6 +76,14 @@ public class ScreenManager {
     public void setScale(GuiGraphicsExtractor context, float scale) {
         // Change pose stack to draw scaled HUD content.
         context.pose().pushMatrix();
+        if (element != null) {
+            // Apply the HUD editor's pixel offset (exact pixels, so it is applied before the scaling)
+            SimpleHudEnhancedConfig config = AutoConfig.getConfigHolder(SimpleHudEnhancedConfig.class).getConfig();
+            HudLayout.Rect base = new HudLayout.Rect(boxX, boxY, boxWidth, boxHeight);
+            int[] offset = HudLayout.effectiveOffset(element, base, config);
+            context.pose().translate((float) offset[0], (float) offset[1]);
+            HudLayout.record(element, new HudLayout.Rect(boxX + offset[0], boxY + offset[1], boxWidth, boxHeight));
+        }
         context.pose().scale(scale, scale);
     }
 

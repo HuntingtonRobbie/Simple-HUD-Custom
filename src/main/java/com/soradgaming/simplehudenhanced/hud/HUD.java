@@ -5,6 +5,7 @@ import com.soradgaming.simplehudenhanced.cache.MovementCache;
 import com.soradgaming.simplehudenhanced.cache.StatusCache;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
 import com.soradgaming.simplehudenhanced.config.TextAlignment;
+import com.soradgaming.simplehudenhanced.gui.HudEditScreen;
 import com.soradgaming.simplehudenhanced.utli.Colours;
 import com.soradgaming.simplehudenhanced.utli.Utilities;
 import net.minecraft.client.Minecraft;
@@ -78,6 +79,9 @@ public class HUD {
     }
 
     public void drawHud(GuiGraphicsExtractor graphics) {
+        // New frame for the HUD editor's element tracking
+        HudLayout.beginFrame();
+
         // Check if HUD is enabled
         if (!config.uiConfig.toggleSimpleHUDEnhanced
                 || com.soradgaming.simplehudenhanced.client.SimpleHudEnhancedClient.isDebugOverlayOpen()) return;
@@ -100,7 +104,8 @@ public class HUD {
             if (config.movementStatus.toggleMovementStatus) {
                 movement.init(GameInformation);
             }
-            if (sprintTimerRunning || !config.paperDoll.togglePaperDollTimer) {
+            // The HUD editor shows the paper doll even when its timer is not running, so it can be moved
+            if (sprintTimerRunning || !config.paperDoll.togglePaperDollTimer || this.client.gui.screen() instanceof HudEditScreen) {
                 movement.drawPaperDoll(graphics);
             }
         }
@@ -157,7 +162,7 @@ public class HUD {
         int lineHeight = (this.getRenderer().lineHeight);
 
         // Screen Manager
-        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight());
+        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight(), HudElement.STATUS_TEXT);
         screenManager.setPadding(4);
         int xAxis = screenManager.calculateXAxis(Xcords, Scale, BoxWidth);
         int yAxis = screenManager.calculateYAxis(lineHeight, hudInfo.size(), Ycords, Scale);
@@ -191,7 +196,7 @@ public class HUD {
 
     private void drawTime(GuiGraphicsExtractor graphics, String systemTime) {
         // Screen Manager
-        ScreenManager timeScreenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight());
+        ScreenManager timeScreenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight(), HudElement.SYSTEM_TIME);
         timeScreenManager.setPadding(2);
         float timeScale = (float) config.statusElements.systemTime.textScale / 100;
         int xAxisTime = timeScreenManager.calculateXAxis(100, timeScale, this.getRenderer().width(systemTime));

@@ -2,6 +2,7 @@ package com.soradgaming.simplehudenhanced.hud;
 
 import com.soradgaming.simplehudenhanced.cache.MovementCache;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
+import com.soradgaming.simplehudenhanced.gui.HudEditScreen;
 import com.soradgaming.simplehudenhanced.utli.Utilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -40,6 +41,9 @@ public class Movement {
             draw(context, "text.hud.simplehudenhanced.sneaking");
         } else if (config.movementStatus.movementTypes.toggleSprintStatus && GameInformation.isPlayerSprinting()) {
             draw(context, "text.hud.simplehudenhanced.sprinting");
+        } else if (client.gui.screen() instanceof HudEditScreen) {
+            // The HUD editor shows a sample so the element can be moved even while standing still
+            draw(context, "text.hud.simplehudenhanced.sprinting");
         }
     }
 
@@ -49,7 +53,7 @@ public class Movement {
         float Scale = (float) config.movementStatus.textScale / 100;
 
         // Screen Manager
-        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight());
+        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getGuiScaledWidth(), this.client.getWindow().getGuiScaledHeight(), HudElement.MOVEMENT);
         screenManager.setPadding(4);
         int xAxis = screenManager.calculateXAxis(config.movementStatus.movementStatusLocationX, Scale, this.renderer.width(text));
         int yAxis = screenManager.calculateYAxis(this.renderer.lineHeight, 1, config.movementStatus.movementStatusLocationY, Scale);
@@ -80,6 +84,15 @@ public class Movement {
         int xAxis = screenManager.calculateXAxis(this.config.paperDoll.paperDollLocationX, 1, 0);
         screenManager.setPadding((int) (26 * scale));
         int yAxis = screenManager.calculateYAxis(0, 1, this.config.paperDoll.paperDollLocationY, 1);
+
+        // HUD editor: the doll is centred on (xAxis, yAxis); report a box around it and apply the pixel offset
+        HudLayout.Rect dollBox = new HudLayout.Rect(
+                Math.round(xAxis - 12 * scale), Math.round(yAxis - 20 * scale), Math.round(24 * scale), Math.round(40 * scale));
+        int[] dollOffset = HudLayout.effectiveOffset(HudElement.PAPER_DOLL, dollBox, config);
+        xAxis += dollOffset[0];
+        yAxis += dollOffset[1];
+        HudLayout.record(HudElement.PAPER_DOLL, new HudLayout.Rect(
+                dollBox.x() + dollOffset[0], dollBox.y() + dollOffset[1], dollBox.width(), dollBox.height()));
 
         // Draw the Paper Doll
         int x1 = Math.round((xAxis - (60 * scale)));
