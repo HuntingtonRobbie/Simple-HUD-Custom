@@ -3,6 +3,7 @@ package com.soradgaming.simplehudenhanced.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
 import com.soradgaming.simplehudenhanced.hud.HUD;
+import com.soradgaming.simplehudenhanced.hud.MinimalEffectsRenderer;
 import com.soradgaming.simplehudenhanced.hud.StatusEffectBarRenderer;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.EnvType;
@@ -57,6 +58,16 @@ public class GameRender {
                 }
             }
         });
+    }
+
+    // Minimal effects style: draw our own icon + timer element and skip vanilla's boxes (and the ring drawn around them)
+    @Inject(method = "renderStatusEffectOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V",
+            at = @At("HEAD"), cancellable = true)
+    private void onRenderMinimalEffects(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (!this.config.minimalEffects.enabled || !this.config.uiConfig.toggleSimpleHUDEnhanced) return;
+
+        MinimalEffectsRenderer.render(context, this.config);
+        ci.cancel();
     }
 
     // Injects into the renderStatusEffectOverlay method in the InGameHud class to render the status effect bars on the HUD
