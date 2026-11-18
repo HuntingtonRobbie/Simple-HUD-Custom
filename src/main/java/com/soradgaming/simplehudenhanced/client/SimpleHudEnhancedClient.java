@@ -38,6 +38,12 @@ public class SimpleHudEnhancedClient implements ClientModInitializer {
         });
     }
 
+    /** True only while the F3 overlay is open (never persisted, so it can't switch the HUD off in the config). */
+    public static boolean isDebugOverlayOpen() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.debugEntries != null && mc.debugEntries.isOverlayVisible();
+    }
+
     void registerKeybindings() {
         KeyMapping toggleHudKeybinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.simplehudenhanced.toggle_hud",
@@ -46,27 +52,10 @@ public class SimpleHudEnhancedClient implements ClientModInitializer {
                 KeyMapping.Category.register(Identifier.fromNamespaceAndPath("simplehudenhanced","hud"))
         ));
 
-        // Initialize previousDebugHudState
-        boolean[] previousDebugHudState = new boolean[]{false};
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
 
-            // Detect changes in shouldShowDebugHud state
-            boolean currentDebugHudState = Minecraft.getInstance().getDebugOverlay().showDebugScreen();
             SimpleHudEnhancedConfig config = this.configHolder.getConfig();
-
-            if (currentDebugHudState != previousDebugHudState[0]) {
-                if (currentDebugHudState) {
-                    config.uiConfig.toggleSimpleHUDEnhanced = false; // Disable HUD when debug HUD is shown
-                } else if (!config.uiConfig.toggleSimpleHUDEnhanced) {
-                    config.uiConfig.toggleSimpleHUDEnhanced = true; // Re-enable HUD when debug HUD is hidden
-                }
-                AutoConfig.getConfigHolder(SimpleHudEnhancedConfig.class).save();
-            }
-
-            // Update the previous state for the next tick
-            previousDebugHudState[0] = currentDebugHudState;
 
             if (toggleHudKeybinding.consumeClick()) {
                 String chatMessage = "key.simplehudenhanced.toggle_hud.chat_message.on";

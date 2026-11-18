@@ -79,7 +79,8 @@ public class HUD {
 
     public void drawHud(GuiGraphicsExtractor graphics) {
         // Check if HUD is enabled
-        if (!config.uiConfig.toggleSimpleHUDEnhanced) return;
+        if (!config.uiConfig.toggleSimpleHUDEnhanced
+                || com.soradgaming.simplehudenhanced.client.SimpleHudEnhancedClient.isDebugOverlayOpen()) return;
 
         // Instance of Class with all the Game Information
         GameInfo GameInformation = new GameInfo(this.client, config);
