@@ -15,7 +15,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public class SimpleHudEnhancedClient implements ClientModInitializer {
     private ConfigHolder<SimpleHudEnhancedConfig> configHolder;
@@ -42,8 +41,8 @@ public class SimpleHudEnhancedClient implements ClientModInitializer {
     void registerKeybindings() {
         KeyMapping toggleHudKeybinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.simplehudenhanced.toggle_hud",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_GRAVE_ACCENT,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_GRAVE,
                 KeyMapping.Category.register(Identifier.fromNamespaceAndPath("simplehudenhanced","hud"))
         ));
 
