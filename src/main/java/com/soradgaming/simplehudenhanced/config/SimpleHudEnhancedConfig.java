@@ -161,6 +161,8 @@ public class SimpleHudEnhancedConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         public boolean showTimer = true;
         @ConfigEntry.Gui.Tooltip
+        public boolean showLevel = true;
+        @ConfigEntry.Gui.Tooltip
         @ConfigEntry.BoundedDiscrete(min = 0, max = 60)
         public int lowTimeWarningSeconds = 10;
         @ConfigEntry.Gui.Tooltip

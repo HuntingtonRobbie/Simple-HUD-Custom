@@ -146,6 +146,8 @@
   "text.autoconfig.simplehudenhanced.option.minimalEffects.alignment": "Timer Side",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.showTimer.@Tooltip": "Show the remaining time (m:ss) next to each icon",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.showTimer": "Show Timer",
+  "text.autoconfig.simplehudenhanced.option.minimalEffects.showLevel.@Tooltip": "Show the effect level as a Roman numeral in the corner of the icon (II, III, IV...). Level I shows no number, like vanilla",
+  "text.autoconfig.simplehudenhanced.option.minimalEffects.showLevel": "Show Effect Level",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.lowTimeWarningSeconds.@Tooltip": "Timer turns red when this many seconds or less remain. 0 turns the warning off",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.lowTimeWarningSeconds": "Low Time Warning (seconds)",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.scale.@Tooltip": "Size of the effects display (percent)",

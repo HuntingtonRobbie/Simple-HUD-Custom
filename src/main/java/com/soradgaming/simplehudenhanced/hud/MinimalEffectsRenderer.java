@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * Draws the player's active status effects as just the effect icon plus a timer (no boxes),
  * in a vertical or horizontal layout at a configurable pixel position.
+ * Effects above level I get a Roman numeral in the bottom right corner of the icon.
  */
 public class MinimalEffectsRenderer {
     private static final int ICON_SIZE = 18;
@@ -29,6 +30,8 @@ public class MinimalEffectsRenderer {
     private static final int WHITE = 0xFFFFFFFF;
     private static final int WARNING_RED = 0xFFFF5555;
     private static final int OUTLINE = 0xAAFFFFFF;
+    private static final int[] ROMAN_VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    private static final String[] ROMAN_SYMBOLS = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
 
     // Size of the element as it was last drawn, in GUI pixels (after scaling). Used by the edit screen.
     private static int lastWidth = ICON_SIZE;
@@ -42,7 +45,8 @@ public class MinimalEffectsRenderer {
         return lastHeight;
     }
 
-    private record Entry(Identifier icon, String text, int color) {}
+    // level is the Roman numeral drawn on the icon, empty for level I or when the option is off
+    private record Entry(Identifier icon, String text, int color, String level) {}
 
     public static void render(DrawContext context, SimpleHudEnhancedConfig config) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -120,6 +124,13 @@ public class MinimalEffectsRenderer {
 
             context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, entry.icon(), iconX, entryY, ICON_SIZE, ICON_SIZE);
 
+            // Level numeral in the bottom right corner of the icon, placed like an item's stack count.
+            // Capitals are 7px tall plus 1px shadow, so y + 10 ends on the icon's last row.
+            if (!entry.level().isEmpty()) {
+                int levelX = iconX + ICON_SIZE - font.getWidth(entry.level());
+                context.drawTextWithShadow(font, entry.level(), levelX, entryY + ICON_SIZE - 8, WHITE);
+            }
+
             if (!entry.text().isEmpty()) {
                 int textY = entryY + (ICON_SIZE - font.fontHeight) / 2 + 1;
                 context.drawTextWithShadow(font, entry.text(), textX, textY, entry.color());
@@ -146,16 +157,33 @@ public class MinimalEffectsRenderer {
                 .map(effect -> new Entry(
                         InGameHud.getEffectTexture(effect.getEffectType()),
                         settings.showTimer ? StatusEffectUtil.getDurationText(effect, 1.0f, tickRate).getString() : "",
-                        getTimerColor(effect, settings, tickRate)))
+                        getTimerColor(effect, settings, tickRate),
+                        settings.showLevel ? getLevelText(effect.getAmplifier() + 1) : ""))
                 .toList();
     }
 
     private static List<Entry> getSampleEntries(SimpleHudEnhancedConfig.MinimalEffects settings) {
         return List.of(
-                new Entry(InGameHud.getEffectTexture(StatusEffects.SPEED), settings.showTimer ? "8:00" : "", WHITE),
-                new Entry(InGameHud.getEffectTexture(StatusEffects.STRENGTH), settings.showTimer ? "1:10" : "", WHITE),
+                new Entry(InGameHud.getEffectTexture(StatusEffects.SPEED), settings.showTimer ? "8:00" : "", WHITE,
+                        settings.showLevel ? getLevelText(2) : ""),
+                new Entry(InGameHud.getEffectTexture(StatusEffects.STRENGTH), settings.showTimer ? "1:10" : "", WHITE, ""),
                 new Entry(InGameHud.getEffectTexture(StatusEffects.FIRE_RESISTANCE), settings.showTimer ? "0:05" : "",
-                        settings.lowTimeWarningSeconds >= 5 ? WARNING_RED : WHITE));
+                        settings.lowTimeWarningSeconds >= 5 ? WARNING_RED : WHITE, ""));
+    }
+
+    // Roman numeral for levels II and up; level I gets nothing, like vanilla ("Speed" vs "Speed II").
+    // Absurd levels from commands fall back to digits.
+    private static String getLevelText(int level) {
+        if (level < 2) return "";
+        if (level > 3999) return Integer.toString(level);
+        StringBuilder roman = new StringBuilder();
+        for (int i = 0; i < ROMAN_VALUES.length; i++) {
+            while (level >= ROMAN_VALUES[i]) {
+                roman.append(ROMAN_SYMBOLS[i]);
+                level -= ROMAN_VALUES[i];
+            }
+        }
+        return roman.toString();
     }
 
     private static int getTimerColor(StatusEffectInstance effect, SimpleHudEnhancedConfig.MinimalEffects settings, float tickRate) {
