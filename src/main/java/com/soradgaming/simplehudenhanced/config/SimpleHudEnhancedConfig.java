@@ -30,6 +30,11 @@ public class SimpleHudEnhancedConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     public EffectsStatus effectsStatus = new EffectsStatus();
 
+    @ConfigEntry.Category("Effects Status")
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    public MinimalEffects minimalEffects = new MinimalEffects();
+
     @ConfigEntry.Category("Movement Status")
     @ConfigEntry.Gui.Tooltip
     public boolean toggleMovementStatus = false;
@@ -87,6 +92,38 @@ public class SimpleHudEnhancedConfig implements ConfigData {
         @ConfigEntry.ColorPicker(allowAlpha = true)
         public int neutralForegroundColor = beneficialForegroundColor;
     }
+    // Minimal effects display: replaces the vanilla effect boxes with just the icon and a timer
+    public static class MinimalEffects {
+        @ConfigEntry.Gui.Tooltip
+        public boolean enabled = true;
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+        @ConfigEntry.Gui.Tooltip
+        public EquipmentOrientation orientation = EquipmentOrientation.Vertical;
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+        @ConfigEntry.Gui.Tooltip
+        public EquipmentAlignment alignment = EquipmentAlignment.Auto;
+        @ConfigEntry.Gui.Tooltip
+        public boolean showTimer = true;
+        @ConfigEntry.Gui.Tooltip
+        public boolean showLevel = true;
+        @ConfigEntry.Gui.Tooltip
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 60)
+        public int lowTimeWarningSeconds = 10;
+        @ConfigEntry.Gui.Tooltip
+        @ConfigEntry.BoundedDiscrete(min = 50, max = 200)
+        public int scale = 100;
+        // Position in GUI pixels, measured from the left/right and top/bottom edge of the screen.
+        // Defaults put it in the top right corner like vanilla. "Move Effects" edit mode changes these.
+        @ConfigEntry.Gui.Tooltip
+        public int positionX = 2;
+        @ConfigEntry.Gui.Tooltip
+        public boolean anchorRight = true;
+        @ConfigEntry.Gui.Tooltip
+        public int positionY = 2;
+        @ConfigEntry.Gui.Tooltip
+        public boolean anchorBottom = false;
+    }
+
     public int getColor(MobEffectInstance effect) {
         // Function for combining two colors (used for background color)
         ToIntBiFunction<Integer, Integer> convert = Integer::sum;
