@@ -5,6 +5,7 @@ import com.soradgaming.simplehudenhanced.cache.MovementCache;
 import com.soradgaming.simplehudenhanced.cache.StatusCache;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
 import com.soradgaming.simplehudenhanced.config.TextAlignment;
+import com.soradgaming.simplehudenhanced.gui.HudEditScreen;
 import com.soradgaming.simplehudenhanced.utli.Colours;
 import com.soradgaming.simplehudenhanced.utli.Utilities;
 import net.minecraft.client.MinecraftClient;
@@ -78,6 +79,9 @@ public class HUD {
     }
 
     public void drawHud(DrawContext context) {
+        // New frame for the HUD editor's element tracking
+        HudLayout.beginFrame();
+
         // Check if HUD is enabled
         if (!config.uiConfig.toggleSimpleHUDEnhanced) return;
 
@@ -99,7 +103,8 @@ public class HUD {
             if (config.movementStatus.toggleMovementStatus) {
                 movement.init(GameInformation);
             }
-            if (sprintTimerRunning || !config.paperDoll.togglePaperDollTimer) {
+            // The HUD editor shows the paper doll even when its timer is not running, so it can be moved
+            if (sprintTimerRunning || !config.paperDoll.togglePaperDollTimer || this.client.currentScreen instanceof HudEditScreen) {
                 movement.drawPaperDoll(context);
             }
         }
@@ -156,7 +161,7 @@ public class HUD {
         int lineHeight = (this.getRenderer().fontHeight); // TODO - Make this configurable
 
         // Screen Manager
-        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
+        ScreenManager screenManager = new ScreenManager(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), HudElement.STATUS_TEXT);
         screenManager.setPadding(4);
         int xAxis = screenManager.calculateXAxis(Xcords, Scale, BoxWidth);
         int yAxis = screenManager.calculateYAxis(lineHeight, hudInfo.size(), Ycords, Scale);
@@ -190,7 +195,7 @@ public class HUD {
 
     private void drawTime(DrawContext context, String systemTime) {
         // Screen Manager
-        ScreenManager timeScreenManager = new ScreenManager(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
+        ScreenManager timeScreenManager = new ScreenManager(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), HudElement.SYSTEM_TIME);
         timeScreenManager.setPadding(2);
         float timeScale = (float) config.statusElements.systemTime.textScale / 100;
         int xAxisTime = timeScreenManager.calculateXAxis(100, timeScale, this.getRenderer().getWidth(systemTime));

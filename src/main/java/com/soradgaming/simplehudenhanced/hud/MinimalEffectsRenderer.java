@@ -3,7 +3,7 @@ package com.soradgaming.simplehudenhanced.hud;
 import com.soradgaming.simplehudenhanced.config.EquipmentAlignment;
 import com.soradgaming.simplehudenhanced.config.EquipmentOrientation;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
-import com.soradgaming.simplehudenhanced.gui.EffectsEditScreen;
+import com.soradgaming.simplehudenhanced.gui.HudEditScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
@@ -50,7 +50,7 @@ public class MinimalEffectsRenderer {
         if (player == null) return;
 
         SimpleHudEnhancedConfig.MinimalEffects settings = config.minimalEffects;
-        boolean editing = client.currentScreen instanceof EffectsEditScreen;
+        boolean editing = client.currentScreen instanceof HudEditScreen;
         float tickRate = client.world != null ? client.world.getTickManager().getTickRate() : 20f;
 
         List<Entry> entries = getEntries(player, settings, tickRate);
@@ -100,6 +100,7 @@ public class MinimalEffectsRenderer {
         int originY = settings.anchorBottom ? screenHeight - settings.positionY - scaledHeight : settings.positionY;
         originX = Math.max(0, Math.min(originX, screenWidth - scaledWidth));
         originY = Math.max(0, Math.min(originY, screenHeight - scaledHeight));
+        HudLayout.record(HudElement.EFFECTS, new HudLayout.Rect(originX, originY, scaledWidth, scaledHeight));
 
         context.getMatrices().pushMatrix();
         context.getMatrices().translate((float) originX, (float) originY);

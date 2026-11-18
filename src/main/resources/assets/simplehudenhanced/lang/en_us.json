@@ -158,9 +158,11 @@
   "text.autoconfig.simplehudenhanced.option.minimalEffects.positionY": "Position Y (pixels)",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.anchorBottom.@Tooltip": "On: Y is measured from the bottom edge. Off: from the top edge",
   "text.autoconfig.simplehudenhanced.option.minimalEffects.anchorBottom": "Measure Y From Bottom Edge",
-  "simplehudenhanced.config.move_effects": "Move Effects",
+  "simplehudenhanced.config.edit_hud": "Edit HUD",
   "simplehudenhanced.edit.done": "Done",
-  "simplehudenhanced.edit.hint": "Arrow keys move the effects 1 pixel, hold Shift for 10",
+  "simplehudenhanced.edit.hint_mouse": "Click an element to select it, drag to move",
+  "simplehudenhanced.edit.hint_keys": "Arrow keys move 1 pixel (Shift: 10)  -  Tab: next element  -  R: reset it",
+  "simplehudenhanced.edit.none_selected": "No element selected",
   "simplehudenhanced.edit.hint_exit": "Press Done or Escape when you are finished",
   
   "text.autoconfig.simplehudenhanced.option.movementStatus.@Tooltip": "Movement Elements (Click to Expand)",

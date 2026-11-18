@@ -1,8 +1,9 @@
 package com.soradgaming.simplehudenhanced.config;
 
-import com.soradgaming.simplehudenhanced.gui.EffectsEditScreen;
-import me.shedaniel.autoconfig.AutoConfig;
+import com.soradgaming.simplehudenhanced.gui.HudEditScreen;
+import me.shedaniel.autoconfig.AutoConfigClient;
 import me.shedaniel.clothconfig2.gui.AbstractConfigScreen;
+import me.shedaniel.clothconfig2.gui.ClothConfigScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -20,13 +21,13 @@ import java.util.List;
 
 /**
  * Adds two buttons to this mod's Cloth Config screen, next to Cancel and Save & Quit:
- * "Move Effects" (enters the in-world edit mode) and "Apply" (saves without closing the screen).
+ * "Edit HUD" (opens the in-world HUD editor) and "Apply" (saves without closing the screen).
  */
 @Environment(EnvType.CLIENT)
 public class ConfigScreenApplyButton {
     private static final String SCREEN_TITLE_KEY = "text.autoconfig.simplehudenhanced.title";
     private static final String APPLY_KEY = "simplehudenhanced.config.apply";
-    private static final String MOVE_EFFECTS_KEY = "simplehudenhanced.config.move_effects";
+    private static final String EDIT_HUD_KEY = "simplehudenhanced.config.edit_hud";
     // Cloth places its bottom buttons at (screen height - 26)
     private static final int BOTTOM_BAR_OFFSET = 26;
 
@@ -58,7 +59,7 @@ public class ConfigScreenApplyButton {
         ClickableWidget saveAndQuit = bottomBar.get(1);
 
         // Split the space the two buttons used into four equal buttons with the same gaps:
-        // [Move Effects] [Cancel] [Apply] [Save & Quit]
+        // [Edit HUD] [Cancel] [Apply] [Save & Quit]
         int left = cancel.getX();
         int gap = saveAndQuit.getX() - cancel.getRight();
         int totalWidth = saveAndQuit.getRight() - left;
@@ -70,28 +71,44 @@ public class ConfigScreenApplyButton {
         saveAndQuit.setWidth(buttonWidth);
         saveAndQuit.setX(left + 3 * stride);
 
-        ButtonWidget moveEffects = ButtonWidget.builder(Text.translatable(MOVE_EFFECTS_KEY), button -> {
-                    // Save pending changes first so edit mode shows the current layout/scale/etc.
+        ButtonWidget editHud = ButtonWidget.builder(Text.translatable(EDIT_HUD_KEY), button -> {
+                    // Save pending changes first so the editor shows the current layout/scale/etc.
                     screen.saveAll(false);
-                    MinecraftClient.getInstance().setScreen(new EffectsEditScreen(getParent(screen)));
+                    MinecraftClient.getInstance().setScreen(new HudEditScreen(getParent(screen), screen.selectedCategoryIndex, getScroll(screen)));
                 })
                 .dimensions(left, barY, buttonWidth, cancel.getHeight())
                 .build();
 
-        ButtonWidget apply = ButtonWidget.builder(Text.translatable(APPLY_KEY), button -> screen.saveAll(false))
+        ButtonWidget apply = ButtonWidget.builder(Text.translatable(APPLY_KEY), button -> {
+                    screen.saveAll(false);
+                    // Cloth decides "edited" by comparing each option with its value when the screen opened, so after
+                    // saving, rebuild the screen: that makes the saved values the new starting point. Otherwise
+                    // changing an option back to its old value would look like "no change" and could not be saved.
+                    reopen(getParent(screen), screen.selectedCategoryIndex, getScroll(screen));
+                })
                 .dimensions(left + 2 * stride, barY, buttonWidth, cancel.getHeight())
                 .build();
         apply.active = false;
 
-        buttons.add(moveEffects);
+        buttons.add(editHud);
         buttons.add(apply);
 
-        ScreenEvents.beforeRender(screen).register((s, context, mouseX, mouseY, tickDelta) -> {
-            // Apply is only clickable while there are unsaved changes, like Save & Quit
-            apply.active = screen.isEdited();
-            // Edit mode only makes sense while the minimal display is (saved as) enabled
-            moveEffects.active = AutoConfig.getConfigHolder(SimpleHudEnhancedConfig.class).getConfig().minimalEffects.enabled;
-        });
+        // Apply is only clickable while there are unsaved changes, like Save & Quit
+        ScreenEvents.beforeRender(screen).register((s, context, mouseX, mouseY, tickDelta) -> apply.active = screen.isEdited());
+    }
+
+    /**
+     * Opens a fresh settings screen (built from the saved config) on the given tab and scroll position.
+     *
+     * @param parent the screen the settings screen was opened from (e.g. Mod Menu)
+     */
+    public static void reopen(Screen parent, int tab, double scroll) {
+        Screen fresh = AutoConfigClient.getConfigScreen(SimpleHudEnhancedConfig.class, parent).get();
+        if (fresh instanceof AbstractConfigScreen configScreen) {
+            configScreen.selectedCategoryIndex = tab;
+        }
+        MinecraftClient.getInstance().setScreen(fresh);
+        setScroll(fresh, scroll);
     }
 
     /** The screen the settings screen was opened from (e.g. Mod Menu), so we can return there afterwards. */
@@ -102,6 +119,29 @@ public class ConfigScreenApplyButton {
             return (Screen) parent.get(screen);
         } catch (ReflectiveOperationException | ClassCastException e) {
             return null;
+        }
+    }
+
+    private static double getScroll(AbstractConfigScreen screen) {
+        return screen instanceof ClothConfigScreen cloth && cloth.listWidget != null ? cloth.listWidget.getScroll() : 0;
+    }
+
+    private static void setScroll(Screen screen, double scroll) {
+        if (scroll <= 0 || !(screen instanceof ClothConfigScreen cloth) || cloth.listWidget == null) return;
+        try {
+            // The list widget's scroll position is a protected field on Cloth's base list class
+            for (Class<?> type = cloth.listWidget.getClass(); type != null; type = type.getSuperclass()) {
+                try {
+                    Field field = type.getDeclaredField("scroll");
+                    field.setAccessible(true);
+                    field.setDouble(cloth.listWidget, scroll);
+                    return;
+                } catch (NoSuchFieldException ignored) {
+                    // try the parent class
+                }
+            }
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            // Not critical: the screen just opens scrolled to the top
         }
     }
 }

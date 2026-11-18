@@ -3,6 +3,7 @@ package com.soradgaming.simplehudenhanced.cache;
 import com.soradgaming.simplehudenhanced.config.EquipmentOrientation;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
 import com.soradgaming.simplehudenhanced.hud.EquipmentInfoStack;
+import com.soradgaming.simplehudenhanced.hud.HudElement;
 import com.soradgaming.simplehudenhanced.hud.ScreenManager;
 import com.soradgaming.simplehudenhanced.utli.TrinketAccessor;
 import net.minecraft.block.Blocks;
@@ -224,7 +225,7 @@ public class EquipmentCache {
         int lineHeight = 16;
 
         // Screen Manager
-        screenManager = new ScreenManager(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
+        screenManager = new ScreenManager(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), HudElement.EQUIPMENT);
         screenManager.setPadding(4);
         int xAxis = screenManager.calculateXAxis(configX, Scale, (this.longestString + 16));
         int yAxis = screenManager.calculateYAxis(lineHeight, equipmentInfo.size(), configY, Scale);
