@@ -1,5 +1,6 @@
 package com.soradgaming.simplehudenhanced.client;
 
+import com.soradgaming.simplehudenhanced.config.ConfigScreenApplyButton;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
 import com.soradgaming.simplehudenhanced.hud.HUD;
 import com.soradgaming.simplehudenhanced.utli.Utilities;
@@ -26,6 +27,8 @@ public class SimpleHudEnhancedClient implements ClientModInitializer {
         this.configHolder = AutoConfig.register(SimpleHudEnhancedConfig.class, Toml4jConfigSerializer::new);
         // Register the keybindings
         this.registerKeybindings();
+        // Add an Apply button to the settings screen
+        ConfigScreenApplyButton.register();
 
         // Register a HUD element to render the custom HUD
         HudElementRegistry.attachElementBefore(VanillaHudElements.TITLE_AND_SUBTITLE ,Identifier.of("simplehudenhanced", "hud"), (context, tickCounter) -> {

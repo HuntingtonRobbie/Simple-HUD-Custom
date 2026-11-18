@@ -31,6 +31,7 @@
   "text.hud.simplehudenhanced.sprinting": "Sprinting",
   
   "text.autoconfig.simplehudenhanced.title": "Simple HUD Enhanced Settings",
+  "simplehudenhanced.config.apply": "Apply",
 
   "text.autoconfig.simplehudenhanced.category.Status Elements": "Status Elements",
   "text.autoconfig.simplehudenhanced.category.Status Elements.@Tooltip": "Status Elements",
