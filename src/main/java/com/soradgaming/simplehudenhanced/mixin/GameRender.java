@@ -60,6 +60,15 @@ public class GameRender {
         });
     }
 
+    // Optionally hide the scoreboard sidebar that servers show on the right side of the screen
+    @Inject(method = "renderScoreboardSidebar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V",
+            at = @At("HEAD"), cancellable = true)
+    private void onRenderScoreboardSidebar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (this.config.uiConfig.hideScoreboardSidebar) {
+            ci.cancel();
+        }
+    }
+
     // Minimal effects style: draw our own icon + timer element and skip vanilla's boxes (and the ring drawn around them)
     @Inject(method = "renderStatusEffectOverlay(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V",
             at = @At("HEAD"), cancellable = true)
