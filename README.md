@@ -1,3 +1,23 @@
+# Simple HUD Enhanced (custom fork)
+
+This is a personal fork of **[Simple HUD Enhanced](https://github.com/soradgaming/Simple-HUD-Enhanced)** by **SoRadGaming**, with contributions from yutotakano, alerouzic, johnvictorfs, A5b84, mooziii and the translators listed in `fabric.mod.json`. Simple HUD Enhanced started as a fork of [Simple Utilities Mod](https://github.com/johnvictorfs/simple-utilities-mod) by johnvictorfs. All credit for the original mod goes to them.
+
+The fork keeps the original **MIT License** (see `LICENSE`). It was made for personal use and is not an official release.
+
+## Branches
+- `26.3`: Minecraft 26.3, built on upstream's `26.2` branch.
+- `1.21.11`: Minecraft 1.21.11, built on upstream's `main`.
+
+## What this fork changes
+- **Minimal effects display:** shows just the effect icon and a timer instead of the vanilla boxes. It has a layout, a timer side, scale and a low-time warning, plus a Roman numeral for effects at level II and up.
+- **Edit HUD screen:** click, drag or nudge (arrow keys) any Simple HUD element into place.
+- **Apply button** in the settings screen.
+- **Hide Scoreboard Sidebar** option.
+- `26.3` only: ported to Minecraft 26.3. Show HUD changes only in the settings screen: the toggle key was removed and F3 no longer rewrites the setting.
+
+---
+
+*The original README follows.*
 ## Mod Pages
 [CurseForge](https://www.curseforge.com/minecraft/mc-mods/simple-hud-enhanced)
 
