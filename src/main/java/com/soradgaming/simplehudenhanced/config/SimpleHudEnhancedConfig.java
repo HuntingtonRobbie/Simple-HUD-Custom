@@ -59,6 +59,8 @@ public class SimpleHudEnhancedConfig implements ConfigData {
         @ConfigEntry.Gui.Tooltip
         public boolean toggleSimpleHUDEnhanced = true;
         @ConfigEntry.Gui.Tooltip
+        public boolean hideScoreboardSidebar = false;
+        @ConfigEntry.Gui.Tooltip
         @ConfigEntry.ColorPicker
         public int textColor = 0xFFFFFF; // Default white color
         @ConfigEntry.Gui.Tooltip

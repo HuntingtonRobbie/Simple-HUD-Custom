@@ -24,6 +24,32 @@ public class GuiMixin {
     @Unique
     SimpleHudEnhancedConfig config = AutoConfig.getConfigHolder(SimpleHudEnhancedConfig.class).getConfig();
 
+    // Read the config on every frame: cancelling the settings screen reloads it into a new object
+    @Unique
+    private static SimpleHudEnhancedConfig currentConfig() {
+        return AutoConfig.getConfigHolder(SimpleHudEnhancedConfig.class).getConfig();
+    }
+
+    // Optionally hide the scoreboard sidebar that servers show on the right side of the screen
+    @Inject(method = "extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+            at = @At("HEAD"), cancellable = true)
+    private void onExtractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (currentConfig().uiConfig.hideScoreboardSidebar) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+            at = @At("HEAD"), cancellable = true)
+    private void onExtractMinimalEffects(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        SimpleHudEnhancedConfig config = currentConfig();
+        if (!config.minimalEffects.enabled || !config.uiConfig.toggleSimpleHUDEnhanced
+                || com.soradgaming.simplehudenhanced.client.SimpleHudEnhancedClient.isDebugOverlayOpen()) return;
+
+        MinimalEffectsRenderer.render(graphics, config);
+        ci.cancel();
+    }
+
     @Inject(method = "extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V", ordinal = 0)
     )

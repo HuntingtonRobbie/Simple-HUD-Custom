@@ -43,6 +43,8 @@
   
   "text.autoconfig.simplehudenhanced.option.uiConfig.toggleSimpleHUDEnhanced.@Tooltip": "Toggle the Simple HUD Enhanced HUD",
   "text.autoconfig.simplehudenhanced.option.uiConfig.toggleSimpleHUDEnhanced": "Show HUD",
+  "text.autoconfig.simplehudenhanced.option.uiConfig.hideScoreboardSidebar.@Tooltip": "Hide the scoreboard sidebar servers show on the right side of the screen (claim, balance, server name, etc.)",
+  "text.autoconfig.simplehudenhanced.option.uiConfig.hideScoreboardSidebar": "Hide Scoreboard Sidebar",
   "text.autoconfig.simplehudenhanced.option.uiConfig.textColor.@Tooltip": "The colour of the text in the HUD",
   "text.autoconfig.simplehudenhanced.option.uiConfig.textColor": "Text Colour",
   "text.autoconfig.simplehudenhanced.option.uiConfig.textBackground.@Tooltip": "Adds a Background to the Text in the HUD",
