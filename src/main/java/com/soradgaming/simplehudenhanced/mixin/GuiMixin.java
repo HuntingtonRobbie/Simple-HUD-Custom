@@ -2,6 +2,7 @@ package com.soradgaming.simplehudenhanced.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.soradgaming.simplehudenhanced.config.SimpleHudEnhancedConfig;
+import com.soradgaming.simplehudenhanced.hud.MinimalEffectsRenderer;
 import com.soradgaming.simplehudenhanced.hud.StatusEffectBarRenderer;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.EnvType;
@@ -39,6 +40,7 @@ public class GuiMixin {
         }
     }
 
+    // Minimal effects style: draw our own icon + timer element and skip vanilla's boxes (and the ring drawn around them)
     @Inject(method = "extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
             at = @At("HEAD"), cancellable = true)
     private void onExtractMinimalEffects(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
