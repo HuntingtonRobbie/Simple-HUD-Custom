@@ -45,7 +45,7 @@ public class MovementCache {
             float flyingHeight = player.getEyeHeight(Pose.FALL_FLYING) / height;
             currentHeightOffset = Mth.lerp(flyingAnimation, 1.0F, flyingHeight);
         } else if (player.isSwimming()) {
-            float swimmingAnimation = player.isVisuallySwimming() ? 1.0F : player.swingTime;
+            float swimmingAnimation = player.isVisuallySwimming() ? 1.0F : player.getSwimAmount(1.0F);
             float swimmingHeight = player.getEyeHeight(Pose.SWIMMING) / height;
             currentHeightOffset = Mth.lerp(swimmingAnimation, 1.0F, swimmingHeight);
         } else if (player.isAutoSpinAttack()) {
