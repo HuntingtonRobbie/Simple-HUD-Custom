@@ -36,6 +36,8 @@ public class SimpleHudEnhancedConfig implements ConfigData {
     public MinimalEffects minimalEffects = new MinimalEffects();
 
     // Pixel offsets set by the HUD editor, added on top of each element's slider position. Not shown in the menu.
+    // (Needs a category, otherwise Cloth adds an empty "default" tab for it.)
+    @ConfigEntry.Category("Status Elements")
     @ConfigEntry.Gui.Excluded
     public LayoutOffsets layoutOffsets = new LayoutOffsets();
 
